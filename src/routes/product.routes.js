@@ -6,7 +6,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/product.controller.js";
-
+import { protect } from "../middlewares/autenticacion.middleware.js";
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { productSchema } from "../schemas/product.schema.js";
 
@@ -20,6 +20,6 @@ productRouter.post("/", validateSchema(productSchema), createProduct);
 
 productRouter.put("/:id", validateSchema(productSchema), updateProduct);
 
-productRouter.delete("/:id", deleteProduct);
+productRouter.delete("/:id", protect, deleteProduct);
 
 export default productRouter;
