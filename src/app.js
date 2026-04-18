@@ -2,6 +2,8 @@ import express from "express";
 import productRouter from "./routes/product.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import "./config/db.js";
+import authRouter from "./routes/auth.routes.js";
+import "./config/db.js";
 
 // 1. Importamos nuestro manejador global
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
@@ -22,6 +24,7 @@ app.get('/', (req, res) => {
 
 app.use("/products", productRouter);
 app.use("/categories", categoryRouter);
+app.use("/auth", authRouter);
 
 // 2. Conectamos el Middleware Global de Errores al final de todas las rutas
 app.use(globalErrorHandler);

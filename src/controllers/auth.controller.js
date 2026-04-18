@@ -40,8 +40,7 @@ export const login = catchAsync(async (req, res, next) => {
     // 3. Si todo está bien, generar el Token
     const token = jwt.sign(
         { id: user.id, username: user.username },
-        process.env.JWT_SECRET || "firma_secreta_provisional", // Usa una variable en tu .env
-        { expiresIn: "1h" }
+        process.env.JWT_SECRET || process.env.FIRMA_SECRETA_PROVISIONAL,
     );
 
     return successResponse(res, 200, "Login exitoso", { token });
