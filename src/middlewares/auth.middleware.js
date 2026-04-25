@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const protect = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    // Verificar si enviaron el encabezado Authorization: Bearer <token>
+    // 2. Validamos que el header exista y tenga el estándar "Bearer "
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         const error = new Error("No autorizado. Por favor inicia sesión.");
         error.statusCode = 401;
