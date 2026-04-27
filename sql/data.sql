@@ -169,3 +169,66 @@ INSERT INTO products (id, name, categori_id, price) VALUES
 (98, 'Asistente Amazon Echo Dot 5ta Gen', 20, 49.99),
 (99, 'Enchufe Inteligente TP-Link Tapo', 20, 15.00),
 (100, 'Cámara de Seguridad Wyze Cam v3', 20, 35.98);
+
+-- ==========================================
+-- 3. POBLAR USUARIOS (Cuentas de prueba)
+-- ==========================================
+-- Se usan los hashes de bcrypt para que las contraseñas sigan siendo válidas:
+INSERT INTO users (name, document, email, password_hash) VALUES 
+(
+  'Carlos Operador', 
+  '100000001',
+  'carlos@operaciones.com',
+  '$2b$10$0qGNFh57SkfjwSqXqJyBNOFd..K3A3Pyz4U4uu9dxB6IrWcru7t52' -- Contraseña original: usuario
+),
+(
+  'Laura Gerente', 
+  '200000002',
+  'laura@gerencia.com',
+  '$2b$10$WfvS1ezsrgtfAIa2mOyWquOq1Q.MouisXVN7rFg6E.ZhnE960qwJy' -- Contraseña original: administrador
+);
+
+-- ==========================================
+-- 4. POBLAR ROLES (Perfiles del sistema)
+-- ==========================================
+INSERT INTO users (name, document, email, password_hash) VALUES 
+('Carlos Operador', '100000001', 'carlos@operaciones.com', '$2b$10$0qGNFh57SkfjwSqXqJyBNOFd..K3A3Pyz4U4uu9dxB6IrWcru7t52'), -- usuario
+('Laura Gerente', '200000002', 'laura@gerencia.com', '$2b$10$WfvS1ezsrgtfAIa2mOyWquOq1Q.MouisXVN7rFg6E.ZhnE960qwJy'); -- administrador
+
+-- Poblar Roles
+INSERT INTO roles (name, description) VALUES 
+('user', 'Perfil de consulta. Solo puede ver listados de productos y categorías.'),
+('admin', 'Perfil de gerencia. Control total sobre inventario, rutas y usuarios.');
+
+-- Poblar Permisos
+INSERT INTO permissions (name, description) VALUES 
+('categories.read', 'Permite listar y ver detalle de categorías'),
+('categories.create', 'Permite registrar nuevas categorías'),
+('categories.update', 'Permite modificar datos de categorías'),
+('categories.delete', 'Permite eliminar categorías del sistema'),
+('products.read', 'Permite ver el catálogo de productos'),
+('products.create', 'Permite registrar un nuevo producto'),
+('products.update', 'Permite actualizar precio y detalles del producto'),
+('products.delete', 'Permite dar de baja un producto'),
+('users.read', 'Permite ver la lista de empleados/usuarios'),
+('users.create', 'Permite registrar nuevos accesos'),
+('users.update', 'Permite cambiar roles o datos de usuarios'),
+('users.delete', 'Permite revocar acceso a usuarios');
+
+-- Asignar Roles a Usuarios
+-- Carlos asume rol 'user' (ID 1) | Laura asume rol 'admin' (ID 2)
+INSERT INTO user_roles (user_id, role_id) VALUES 
+(1, 1), 
+(2, 2); 
+
+-- Asignar Permisos a los Roles
+-- Permisos para 'user' (ID 1)
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+(1, 1), -- categories.read
+(1, 5); -- products.read
+
+-- Permisos para 'admin' (ID 2) - Se le asignan los 12 permisos
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+(2, 1), (2, 2), (2, 3), (2, 4), 
+(2, 5), (2, 6), (2, 7), (2, 8), 
+(2, 9), (2, 10), (2, 11), (2, 12);
