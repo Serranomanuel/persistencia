@@ -5,23 +5,18 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-  getProductsByCategory, // Controlador especial para la relación
 } from "../controllers/category.controller.js";
 
 import { validateSchema } from "../middlewares/validator.middleware.js";
 import { categorySchema } from "../schemas/category.schema.js";
-
-// Importamos nuestro guardian
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { validateToken } from "../middlewares/auth.middleware.js";
+import { checkPermission } from "../middlewares/autorization.js";
 
 export const categoryRouter = Router();
 
-categoryRouter.get("/", verifyToken, getAllCategories);
-categoryRouter.get("/:id",verifyToken, getCategoryById);
-categoryRouter.post("/", verifyToken,  validateSchema(categorySchema), createCategory);
-categoryRouter.put("/:id", validateSchema(categorySchema), updateCategory);
-categoryRouter.delete("/:id", verifyToken,  deleteCategory);
-
-// Ruta Relacional: Obtener productos por categoría
-// Sigue el estándar REST: /recurso-padre/:id/recurso-hijo
-categoryRouter.get("/:id/products", verifyToken,  getProductsByCategory);
+// Rutas de Categorías con protección completa
+categoryRouter.get("/", validateToken, checkPermission("categories.view"), getAllCategories);
+categoryRouter.get("/:id", validateToken, checkPermission("categories.view"), getCategoryById);
+categoryRouter.post("/", validateToken, checkPermission("categories.create"), validateSchema(categorySchema), createCategory);
+categoryRouter.put("/:id", validateToken, checkPermission("categories.update"), validateSchema(categorySchema), updateCategory);
+categoryRouter.delete("/:id", validateToken, checkPermission("categories.delete"), deleteCategory);
