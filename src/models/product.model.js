@@ -1,65 +1,36 @@
-import pool from "../config/db.js";
+import { db } from "../config/db.js";
 
-export const ProductModel = {
-  findAll: async () => {
-    const [rows] = await pool.query("SELECT * FROM products");
+export class ProductModel {
+  static async findAll() {
+    const [rows] = await db.query("SELECT * FROM products");
     return rows;
-  },
+  }
 
-  findById: async (id) => {
-    const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
-      id,
-    ]);
+  static async findById(id) {
+    const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
     return rows[0];
-  },
+  }
 
-  // El método que conecta ambos mundos
-  findByCategoryId: async (categoryId) => {
-    // Usamos el nombre exacto de la columna que definiste en tu SQL: 'categori_id'
-    const [rows] = await pool.query(
-      "SELECT * FROM products WHERE categori_id = ?",
-      [categoryId],
+  static async create(data) {
+    const { name, description, price, stock, category_id } = data;
+    const [result] = await db.query(
+      "INSERT INTO products (name, description, price, stock, category_id) VALUES (?, ?, ?, ?, ?)",
+      [name, description, price, stock, category_id]
     );
-    return rows;
-  },
+    return result;
+  }
 
-  create: async (newProduct) => {
-    // Extraemos los campos que coinciden con nuestra tabla SQL actual
-    const { name, categori_id, price } = newProduct;
-
-    const [result] = await pool.query(
-      "INSERT INTO products (name, categori_id, price) VALUES (?, ?, ?)",
-      [name, categori_id, price],
+  static async update(id, data) {
+    const { name, description, price, stock, category_id } = data;
+    const [result] = await db.query(
+      "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, category_id = ? WHERE id = ?",
+      [name, description, price, stock, category_id, id]
     );
+    return result;
+  }
 
-    const [createdProduct] = await pool.query(
-      "SELECT * FROM products WHERE id = ?",
-      [result.insertId],
-    );
-    return createdProduct[0];
-  },
-
-  update: async (id, updatedFields) => {
-    const { name, categori_id } = updatedFields;
-
-    const [result] = await pool.query(
-      "UPDATE products SET name = ?, categori_id = ? price = ? WHERE id = ?",
-      [name, categori_id, id],
-    );
-
-    if (result.affectedRows === 0) return null;
-
-    const [updatedProduct] = await pool.query(
-      "SELECT * FROM products WHERE id = ?",
-      [id],
-    );
-    return updatedProduct[0];
-  },
-
-  delete: async (id) => {
-    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [
-      id,
-    ]);
-    return result.affectedRows > 0;
-  },
-};
+  static async delete(id) {
+    const [result] = await db.query("DELETE FROM products WHERE id = ?", [id]);
+    return result;
+  }
+}

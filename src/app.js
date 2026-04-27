@@ -1,32 +1,23 @@
 import express from "express";
-import productRouter from "./routes/product.routes.js";
-import categoryRouter from "./routes/category.routes.js";
-import "./config/db.js";
-import authRouter from "./routes/auth.routes.js";
-import "./config/db.js";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
-// 1. Importamos nuestro manejador global
-import { globalErrorHandler } from "./middlewares/error.middleware.js";
+import router from "./routes/index.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 const app = express();
 
+// Middlewares globales
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(morgan("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    messaje: "Saludo de la API",
-    data: [],
-    errors: [],
-  });
-})
+// Rutas de la API
+app.use("/api", router);
 
-app.use("/products", productRouter);
-app.use("/categories", categoryRouter);
-app.use("/auth", authRouter);
-
-// 2. Conectamos el Middleware Global de Errores al final de todas las rutas
-app.use(globalErrorHandler);
+// IMPORTANTE: El middleware de errores siempre va al final
+app.use(errorMiddleware);
 
 export default app;
